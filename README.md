@@ -14,7 +14,7 @@ This project is a cloud-hosted resume platform built on AWS using Terraform, ser
 - Terraform for infrastructure as code
 
 ## What I Built
-I redesigned the traditional Cloud Resume Challenge into an AWS Resume Platform focused on automation, scalability, and production-style deployment.
+I dessigned a AWS Resume Platform focused on automation, scalability, and production-style deployment.
 
 ## Skills Demonstrated
 - AWS cloud architecture
@@ -27,9 +27,6 @@ I redesigned the traditional Cloud Resume Challenge into an AWS Resume Platform 
 
 ## Architecture Diagram
 ![Architecture Diagram](img/architecture-diagram.png)
-
-## Live Demo
-[Add your website link here]
 
 ## Technical Documentation
 See the full step-by-step build guide here: [STEP-BY-STEP.md](docs/STEP-BY-STEP.md)
