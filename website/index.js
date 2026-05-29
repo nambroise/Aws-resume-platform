@@ -1,19 +1,19 @@
-$(document).ready(function (e) {
-    $win = $(window);
-    $navbar = $('#header');
-    $toggle = $('.toggle-button');
-    var width = $navbar.width();
+```javascript
+$(document).ready(function () {
+    const $win = $(window);
+    const $navbar = $('#header');
+    const $toggle = $('.toggle-button');
+    const width = $navbar.width();
+
     toggle_onclick($win, $navbar, width);
 
-    // resize event
     $win.resize(function () {
         toggle_onclick($win, $navbar, width);
     });
 
-    $toggle.click(function (e) {
+    $toggle.click(function () {
         $navbar.toggleClass("toggle-left");
-    })
-
+    });
 });
 
 function toggle_onclick($win, $navbar, width) {
@@ -24,44 +24,57 @@ function toggle_onclick($win, $navbar, width) {
     }
 }
 
-var typed = new Typed('#typed', {
-    strings: [
-        'Cloud Engineer',
-        'Cloud Architect',
-        'DevOps Engineer'
-    ],
-    typeSpeed: 50,
-    backSpeed: 50,
-    loop: true
-});
+// Homepage typing animation
+if (document.querySelector('#typed')) {
+    new Typed('#typed', {
+        strings: [
+            'AWS Cloud Engineer',
+            'DevOps Engineer',
+            'Terraform / IaC Builder'
+        ],
+        typeSpeed: 50,
+        backSpeed: 50,
+        loop: true
+    });
+}
 
-var typed_2 = new Typed('#typed_2', {
-    strings: [
-        'Cloud Engineer',
-        'Cloud Architect',
-        'DevOps Engineer'
-    ],
-    typeSpeed: 50,
-    backSpeed: 50,
-    loop: true
-});
-
+// Smooth scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
 
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
     });
 });
 
-const counter = document.querySelector(".counter-number");
+// Visitor counter powered by AWS Lambda + DynamoDB
+const counterElements = document.querySelectorAll(".counter-number");
+
 async function updateCounter() {
-    let response = await fetch(
-        "https://wwjcx7tyxrbjmbkf3vc3teo3mu0qrvhq.lambda-url.ca-central-1.on.aws/"
-    );
-    let data = await response.json();
-    counter.innerHTML = `👀 Views: ${data}`;
+    try {
+        const response = await fetch(
+            "https://wwjcx7tyxrbjmbkf3vc3teo3mu0qrvhq.lambda-url.ca-central-1.on.aws/"
+        );
+
+        const data = await response.json();
+
+        counterElements.forEach(counter => {
+            counter.innerHTML = `👀 Views: ${data}`;
+        });
+
+    } catch (error) {
+        console.error("Visitor counter error:", error);
+
+        counterElements.forEach(counter => {
+            counter.innerHTML = "👀 Views: unavailable";
+        });
+    }
 }
+
 updateCounter();
+```
