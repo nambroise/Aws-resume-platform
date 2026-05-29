@@ -15,6 +15,8 @@ This project is a cloud-hosted resume platform built on AWS using Terraform, ser
 
 ## What I Built
 I designed an AWS Resume Platform focused on automation, scalability, and production-style deployment.
+Lambda, DynamoDB, and IAM permissions were provisioned with Terraform.
+S3, CloudFront, Route 53, and ACM were configured manually through the AWS Console.
 
 ## Skills Demonstrated
 - AWS cloud architecture
