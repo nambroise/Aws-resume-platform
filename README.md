@@ -14,7 +14,7 @@ This project is a cloud-hosted resume platform built on AWS using Terraform, ser
 - Terraform for infrastructure as code
 
 ## What I Built
-I dessigned a AWS Resume Platform focused on automation, scalability, and production-style deployment.
+I designed a AWS Resume Platform focused on automation, scalability, and production-style deployment.
 
 ## Skills Demonstrated
 - AWS cloud architecture
@@ -26,7 +26,7 @@ I dessigned a AWS Resume Platform focused on automation, scalability, and produc
 - Frontend deployment to S3/CloudFront
 
 ## Architecture Diagram
-![Architecture Diagram](img/Aws-arch-cloud-resume.png)
+![Architecture Diagram](website/img/Aws-arch-cloud-resume.png)
 
 ## Technical Documentation
 See the full step-by-step build guide here: [STEP-BY-STEP.md](docs/STEP-BY-STEP.md)
