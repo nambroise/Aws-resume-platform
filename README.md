@@ -26,7 +26,7 @@ I dessigned a AWS Resume Platform focused on automation, scalability, and produc
 - Frontend deployment to S3/CloudFront
 
 ## Architecture Diagram
-![Architecture Diagram](Aws-arch-cloud-resume.png)
+![Architecture Diagram](imgs/Aws-arch-cloud-resume.png)
 
 ## Technical Documentation
 See the full step-by-step build guide here: [STEP-BY-STEP.md](docs/STEP-BY-STEP.md)
