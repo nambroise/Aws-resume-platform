@@ -112,7 +112,7 @@ body{
     height: 240px;
     border-radius: 50%;
     margin: auto;
-    background: url(./assets/avatar-alt.png) no-repeat;
+    background: url(../assets/avatar-alt.png) no-repeat;
     background-size: 110%;
     background-position: 40% 0;
 }
