@@ -29,8 +29,7 @@ if (document.querySelector('#typed')) {
     new Typed('#typed', {
         strings: [
             'AWS Cloud Engineer',
-            'DevOps Engineer',
-            'Terraform / IaC Builder'
+            'DevOps Engineer'
         ],
         typeSpeed: 50,
         backSpeed: 50,
