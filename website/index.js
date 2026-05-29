@@ -1,4 +1,4 @@
-```javascript
+
 $(document).ready(function () {
     const $win = $(window);
     const $navbar = $('#header');
