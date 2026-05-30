@@ -667,6 +667,7 @@ Add screenshot here:
 Screenshot 10 – Route 53 A Record for platform.nathan-resume.com
 ```
 
+![Cloudfront-CName ](images/step5-cloudfront-cname.png)
 ![Route 53 Record](images/step5-route53-record.png)
 
 Add screenshot here:
