@@ -1,4 +1,5 @@
 # AWS Resume Platform
+🔗 **Live Resume Website:** [nathan-ambroise.cloud](https://platform.nathan-resume.com)  
 
 ## Overview
 This project is a cloud-hosted resume platform built on AWS using Terraform, serverless services, and CI/CD automation.
