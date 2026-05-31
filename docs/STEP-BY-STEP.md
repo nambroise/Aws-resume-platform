@@ -686,4 +686,405 @@ The custom domain `platform.nathan-resume.com` was successfully connected to the
 
 ```
 ```
+# Step 6 – Test the DynamoDB Visitor Counter Table
+
+## Overview
+
+Before deploying infrastructure with Terraform, I created a test DynamoDB table in the AWS Console to validate the visitor counter design and data structure.
+
+## Objectives
+
+* Validate the visitor counter database design
+* Test DynamoDB table creation
+* Create a sample visitor counter record
+* Verify the table structure before Terraform deployment
+
+> **Note:** This DynamoDB table was created for testing purposes. The production DynamoDB table is deployed later using Terraform.
+
+---
+
+## Create the Test Table
+
+Navigate to:
+
+```text
+AWS Console
+→ DynamoDB
+→ Tables
+→ Create Table
+```
+
+Configure:
+
+| Setting       | Value                       |
+| ------------- | --------------------------- |
+| Table Name    | platform-nathan-resume-test |
+| Partition Key | id                          |
+| Key Type      | String                      |
+| Capacity Mode | On-Demand                   |
+
+---
+
+## Create Initial Visitor Counter Record
+
+Navigate to:
+
+```text
+Table
+→ Explore Table Items
+→ Create Item
+```
+
+Create:
+
+```json
+{
+  "id": "1",
+  "views": 1
+}
+```
+
+---
+
+## Verify Data Structure
+
+The table should contain:
+
+| id | views |
+| -- | ----- |
+| 1  | 1     |
+
+This structure will later be used by the Lambda function to retrieve and update the visitor count.
+
+---
+
+## Screenshot
+
+```text
+Screenshot 12 – DynamoDB Test Table
+```
+
+![DynamoDB Table](images/step6-dynamodb-table.png)
+
+```text
+Screenshot 13 – DynamoDB Test Record
+```
+
+![DynamoDB Record](images/step6-dynamodb-item.png)
+
+---
+
+## Outcome
+
+A DynamoDB test table was successfully created and validated. This confirmed the database design required for the visitor counter before automating deployment through Terraform.
+
+```
+```
+# Step 7 – Test the Lambda Visitor Counter Function
+
+## Overview
+
+Before deploying the production Lambda function with Terraform, I created a test Lambda function in AWS to validate the visitor counter logic and verify communication with DynamoDB.
+
+## Objectives
+
+* Create a test Lambda function
+* Connect Lambda to DynamoDB
+* Retrieve the visitor count
+* Increment the count by one
+* Update DynamoDB automatically
+* Return the updated count
+
+> **Note:** This Lambda function was created for testing and validation. The production Lambda function is later deployed using Terraform.
+
+---
+
+## Create Lambda Function
+
+Navigate to:
+
+```text
+AWS Console
+→ Lambda
+→ Create Function
+```
+
+Configure:
+
+| Setting       | Value                       |
+| ------------- | --------------------------- |
+| Function Name | myfunc-test                 |
+| Runtime       | Python 3.10                 |
+| Architecture  | x86_64                      |
+| Permissions   | Create New IAM Role         |
+
+---
+
+## Enable Function URL
+
+Under Advanced Settings:
+
+```text
+Enable Function URL = Enabled
+Authentication Type = NONE
+```
+
+This generates a public HTTPS endpoint used for testing.
+
+---
+
+## Lambda Test Code
+
+```python
+import boto3
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('nathan-resume-platform-test')
+
+def lambda_handler(event, context):
+
+    response = table.get_item(
+        Key={
+            'id': '1'
+        }
+    )
+
+    views = response['Item']['views']
+    views = views + 1
+
+    table.put_item(
+        Item={
+            'id': '1',
+            'views': views
+        }
+    )
+
+    return views
+```
+
+---
+
+## Deploy and Test
+
+Click:
+
+```text
+Deploy
+```
+
+Open the Function URL.
+
+Example:
+
+```text
+https://xxxxxxxx.lambda-url.us-east-1.on.aws/
+```
+
+Expected result:
+
+```text
+25
+```
+
+Refreshing the page should increase the count.
+
+---
+
+## Validate DynamoDB Update
+
+Return to DynamoDB and verify that the `views` attribute increases after each Lambda invocation.
+
+Example:
+
+```text
+Before: 25
+After: 26
+```
+
+---
+
+## Screenshot
+
+```text
+Screenshot 14 – Lambda Function Configuration
+```
+
+![Lambda Configuration](images/step7-lambda-config.png)
+
+```text
+Screenshot 15 – Lambda Function URL Test
+```
+
+![Lambda URL Test](images/step7-lambda-url.png)
+
+```text
+Screenshot 16 – DynamoDB Updated by Lambda
+```
+
+![Lambda DynamoDB Update](images/step7-lambda-update.png)
+
+---
+
+## Outcome
+
+A test Lambda function successfully retrieved visitor counts from DynamoDB, incremented the count, updated the database, and returned the new value. This validated the visitor counter logic before automating deployment with Terraform.
+
+```
+```
+# Step 7 – Test the Lambda Visitor Counter Function
+
+## Overview
+
+Before deploying the production Lambda function with Terraform, I created a test Lambda function in AWS to validate the visitor counter logic and verify communication with DynamoDB.
+
+## Objectives
+
+* Create a test Lambda function
+* Connect Lambda to DynamoDB
+* Retrieve the visitor count
+* Increment the count by one
+* Update DynamoDB automatically
+* Return the updated count
+
+> **Note:** This Lambda function was created for testing and validation. The production Lambda function is later deployed using Terraform.
+
+---
+
+## Create Lambda Function
+
+Navigate to:
+
+```text
+AWS Console
+→ Lambda
+→ Create Function
+```
+
+Configure:
+
+| Setting       | Value                       |
+| ------------- | --------------------------- |
+| Function Name | nathan-resume-platform-test |
+| Runtime       | Python 3.x                  |
+| Architecture  | x86_64                      |
+| Permissions   | Create New IAM Role         |
+
+---
+
+## Enable Function URL
+
+Under Advanced Settings:
+
+```text
+Enable Function URL = Enabled
+Authentication Type = NONE
+```
+
+This generates a public HTTPS endpoint used for testing.
+
+---
+
+## Lambda Test Code
+
+```python
+import boto3
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('nathan-resume-platform-test')
+
+def lambda_handler(event, context):
+
+    response = table.get_item(
+        Key={
+            'id': '1'
+        }
+    )
+
+    views = response['Item']['views']
+    views = views + 1
+
+    table.put_item(
+        Item={
+            'id': '1',
+            'views': views
+        }
+    )
+
+    return views
+```
+
+---
+
+## Deploy and Test
+
+Click:
+
+```text
+Deploy
+```
+
+Open the Function URL.
+
+Example:
+
+```text
+https://xxxxxxxx.lambda-url.us-east-1.on.aws/
+```
+
+Expected result:
+
+```text
+25
+```
+
+Refreshing the page should increase the count.
+
+---
+
+## Validate DynamoDB Update
+
+Return to DynamoDB and verify that the `views` attribute increases after each Lambda invocation.
+
+Example:
+
+```text
+Before: 25
+After: 26
+```
+
+---
+
+## Screenshot
+
+```text
+Screenshot 14 – Lambda Function Configuration
+```
+
+![Lambda Configuration](images/step7-lambda-config.png)
+
+```text
+Screenshot 15 – Lambda Function URL Test
+```
+
+![Lambda URL Test](images/step7-lambda-url.png)
+
+```text
+Screenshot 16 – DynamoDB Updated by Lambda
+```
+
+![Lambda DynamoDB Update](images/step7-lambda-update.png)
+
+---
+
+## Outcome
+
+A test Lambda function successfully retrieved visitor counts from DynamoDB, incremented the count, updated the database, and returned the new value. This validated the visitor counter logic before automating deployment with Terraform.
+
+```
+```
+
+
+
+
+
 
