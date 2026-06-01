@@ -60,7 +60,7 @@ async function updateCounter() {
             "https://v62m4nlkzpcgiaqmifz35xfsoy0rlsbg.lambda-url.us-east-1.on.aws/"
         );
 
-        const data = await response.json();
+        const data = await response.text();
 
         counterElements.forEach(counter => {
             counter.innerHTML = `👀 Views: ${data}`;
