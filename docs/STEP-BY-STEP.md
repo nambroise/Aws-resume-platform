@@ -938,16 +938,16 @@ After validating the DynamoDB table and Lambda function, I connected the fronten
 * Create a JavaScript visitor counter
 * Connect the website to the Lambda Function URL
 * Retrieve visitor counts dynamically
-* Display visitor counts on the website
+* Display the count on the website
 * Validate frontend and backend communication
 
-> **Note:** This step was completed using the test Lambda Function URL before deploying the production infrastructure with Terraform.
+> **Note:** This step was completed using a test Lambda Function URL before deploying the production infrastructure with Terraform.
 
 ---
 
 ## Create the Visitor Counter Element
 
-Inside `index.html`, create a counter element that will display the view count.
+Inside `index.html`, I added counter elements using the `counter-number` class.
 
 ```html
 <div class="counter-number">
@@ -955,11 +955,54 @@ Inside `index.html`, create a counter element that will display the view count.
 </div>
 ```
 
+The same class can be used in multiple sections, such as:
+
+```text
+Navigation Menu
+Visitor Counter Section
+Footer
+```
+
 ---
 
-## Connect JavaScript to Lambda
+## Initial JavaScript Attempt
 
-Inside `index.js`, add the following code:
+The first JavaScript implementation attempted to call the Lambda Function URL and parse the response as JSON.
+
+```javascript
+const counterElements = document.querySelectorAll(".counter-number");
+
+async function updateCounter() {
+    try {
+        const response = await fetch(
+            "https://v62m4nlkzpcgiaqmifz35xfsoy0rlsbg.lambda-url.us-east-1.on.aws/"
+        );
+
+        const data = await response.json();
+
+        counterElements.forEach(counter => {
+            counter.innerHTML = `👀 Views: ${data}`;
+        });
+
+    } catch (error) {
+        console.error("Visitor counter error:", error);
+
+        counterElements.forEach(counter => {
+            counter.innerHTML = "👀 Views: unavailable";
+        });
+    }
+}
+
+updateCounter();
+```
+
+This version did not display the visitor count correctly because the Lambda function returned a plain text value instead of JSON.
+
+---
+
+## Updated JavaScript Integration
+
+The JavaScript was updated to use `response.text()` instead of `response.json()`.
 
 ```javascript
 const counterElements = document.querySelectorAll(".counter-number");
@@ -980,14 +1023,14 @@ async function updateCounter() {
         const data = await response.text();
 
         counterElements.forEach(counter => {
-            counter.innerHTML = `Views: ${data}`;
+            counter.innerHTML = `👀 Views: ${data}`;
         });
 
     } catch (error) {
         console.error("Visitor counter error:", error);
 
         counterElements.forEach(counter => {
-            counter.innerHTML = "Views: unavailable";
+            counter.innerHTML = "👀 Views: unavailable";
         });
     }
 }
@@ -999,139 +1042,111 @@ updateCounter();
 
 ## Verify HTML Integration
 
-Ensure the counter element exists in the website.
+The website includes the `counter-number` class in multiple locations so all counters update at the same time.
 
-Example locations:
+Example:
 
-```text
-Navigation Menu
-Footer
-Homepage
+```html
+<h2 class="counter-number font-staat font-size-34">
+    Loading Views...
+</h2>
 ```
 
-My implementation displays the visitor count in:
+In JavaScript, the selector uses `.counter-number` because the period represents a CSS class selector.
 
-```text
-Navigation Menu
-Visitor Counter Section
-Footer
+```javascript
+document.querySelectorAll(".counter-number");
 ```
 
 ---
 
 ## Test the Counter
 
-Refresh the website.
+After uploading the updated `index.js` file, I refreshed the website.
 
-Example result:
+Expected result:
 
 ```text
-Views: 13
+👀 Views: 13
 ```
 
 Each refresh should:
 
-1. Call Lambda
-2. Retrieve the current view count
-3. Increment DynamoDB
-4. Display the updated value
+1. Call the Lambda Function URL
+2. Retrieve the current visitor count
+3. Increment the value in DynamoDB
+4. Return the updated count
+5. Display the updated count on the website
 
 ---
 
 ## Validate End-to-End Functionality
 
-Verify:
-
-```text
-Website → JavaScript → Lambda → DynamoDB
-```
-
-Workflow:
+The full visitor counter workflow is:
 
 ```text
 User visits website
       ↓
-JavaScript fetch request
+JavaScript sends fetch request
       ↓
-Lambda Function URL
+Lambda Function URL is invoked
       ↓
-DynamoDB table updated
+Lambda updates DynamoDB
       ↓
-New count returned
+Updated count is returned
       ↓
-Displayed on website
+Website displays the visitor count
 ```
 
 ---
 
 ## Troubleshooting and Debugging
 
-During implementation, the visitor counter initially failed and displayed:
+During implementation, the visitor counter initially displayed:
 
 ```text
-Views: unavailable
+👀 Views: unavailable
 ```
 
-Several troubleshooting steps were performed to identify and resolve the issue.
-
+The following issues were reviewed and corrected.
 
 ### Issue 1 – Lambda Response Format
 
-The original code expected a JSON response:
+The original code expected a JSON response.
 
 ```javascript
 const data = await response.json();
 ```
 
-However, the Lambda function returned a plain text value.
-
-The code was updated to:
+However, the Lambda function returned a plain text number. The JavaScript was updated to:
 
 ```javascript
 const data = await response.text();
 ```
 
-This allowed the visitor count to display correctly.
+### Issue 2 – Lambda Function URL CORS
 
----
+The Lambda Function URL required CORS settings so the browser could call it from the website domain.
 
-### Issue 2 – Lambda Function URL CORS Configuration
-
-The browser blocked requests from the website because the Function URL CORS settings were incomplete.
-
-The Function URL was updated with:
+Recommended production configuration:
 
 ```text
-Allow Origin:
-https://platform.nathan-resume.com
-
-Allow Methods:
-GET
-
-Allow Headers:
-*
+Allow Origin: https://platform.nathan-resume.com
+Allow Methods: GET
+Allow Headers: *
 ```
 
-For testing purposes, the following configuration was temporarily used:
+Temporary testing configuration:
 
 ```text
-Allow Origin:
-*
-
-Allow Methods:
-GET
-
-Allow Headers:
-*
+Allow Origin: *
+Allow Methods: GET
+Allow Headers: *
 ```
 
----
+### Issue 3 – CloudFront Cache
 
-### Issue 3 – CloudFront Caching
-
-After updating the JavaScript file, CloudFront continued serving an older cached version of `index.js`.
-
-To refresh the cache, a CloudFront invalidation was created:
+After updating `index.js`, CloudFront may continue serving an older cached version of the file. To refresh the cache, I created a CloudFront invalidation.
 
 ```text
 CloudFront
@@ -1140,23 +1155,21 @@ CloudFront
 → Create Invalidation
 ```
 
-Path:
+Invalidation path:
 
 ```text
 /*
 ```
 
-This forced CloudFront to retrieve the newest files from the S3 bucket.
+### Issue 4 – Browser Developer Tools
 
----
+I used browser developer tools to verify:
 
-These tools were used to verify:
-
-* Successful Lambda requests
-* HTTP status codes
-* JavaScript execution
-* CORS configuration
-* CloudFront cache updates
+* JavaScript errors
+* Failed network requests
+* HTTP response status codes
+* CORS errors
+* Whether the updated `index.js` file loaded correctly
 
 ---
 
@@ -1190,7 +1203,4 @@ Screenshot 20 – Visitor Counter Working
 
 ## Outcome
 
-The frontend website successfully communicates with the Lambda Function URL and displays the live visitor count. Through troubleshooting, Lambda configuration, CORS settings, CloudFront cache management, and browser debugging tools were validated. This completed the end-to-end visitor counter workflow before deploying the production infrastructure using Terraform.
-
-```
-```
+The frontend website was connected to the Lambda Function URL using JavaScript. After troubleshooting the Lambda response format, CORS settings, and CloudFront caching, the website successfully displayed the live visitor count from DynamoDB. This validated the end-to-end visitor counter workflow before deploying the production infrastructure with Terraform.
