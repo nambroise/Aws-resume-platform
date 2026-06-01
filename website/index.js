@@ -1,4 +1,3 @@
-
 $(document).ready(function () {
     const $win = $(window);
     const $navbar = $('#header');
@@ -57,20 +56,27 @@ const counterElements = document.querySelectorAll(".counter-number");
 async function updateCounter() {
     try {
         const response = await fetch(
-            "https://v62m4nlkzpcgiaqmifz35xfsoy0rlsbg.lambda-url.us-east-1.on.aws/"
+            "https://v62m4nlkzpcgiaqmifz35xfsoy0rlsbg.lambda-url.us-east-1.on.aws/",
+            {
+                method: "GET"
+            }
         );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
 
         const data = await response.text();
 
         counterElements.forEach(counter => {
-            counter.innerHTML = `👀 Views: ${data}`;
+            counter.innerHTML = `Views: ${data}`;
         });
 
     } catch (error) {
         console.error("Visitor counter error:", error);
 
         counterElements.forEach(counter => {
-            counter.innerHTML = "👀 Views: unavailable";
+            counter.innerHTML = "Views: unavailable";
         });
     }
 }
