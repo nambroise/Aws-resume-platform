@@ -927,3 +927,270 @@ A test Lambda function successfully retrieved visitor counts from DynamoDB, incr
 
 ```
 ```
+# Step 8 – Test the JavaScript Visitor Counter Integration
+
+## Overview
+
+After validating the DynamoDB table and Lambda function, I connected the frontend website to the backend API using JavaScript. This allows the AWS Resume Platform to retrieve and display the live visitor count directly on the website.
+
+## Objectives
+
+* Create a JavaScript visitor counter
+* Connect the website to the Lambda Function URL
+* Retrieve visitor counts dynamically
+* Display visitor counts on the website
+* Validate frontend and backend communication
+
+> **Note:** This step was completed using the test Lambda Function URL before deploying the production infrastructure with Terraform.
+
+---
+
+## Create the Visitor Counter Element
+
+Inside `index.html`, create a counter element that will display the view count.
+
+```html
+<div class="counter-number">
+    Loading Views...
+</div>
+```
+
+---
+
+## Connect JavaScript to Lambda
+
+Inside `index.js`, add the following code:
+
+```javascript
+const counterElements = document.querySelectorAll(".counter-number");
+
+async function updateCounter() {
+    try {
+        const response = await fetch(
+            "https://v62m4nlkzpcgiaqmifz35xfsoy0rlsbg.lambda-url.us-east-1.on.aws/",
+            {
+                method: "GET"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.text();
+
+        counterElements.forEach(counter => {
+            counter.innerHTML = `Views: ${data}`;
+        });
+
+    } catch (error) {
+        console.error("Visitor counter error:", error);
+
+        counterElements.forEach(counter => {
+            counter.innerHTML = "Views: unavailable";
+        });
+    }
+}
+
+updateCounter();
+```
+
+---
+
+## Verify HTML Integration
+
+Ensure the counter element exists in the website.
+
+Example locations:
+
+```text
+Navigation Menu
+Footer
+Homepage
+```
+
+My implementation displays the visitor count in:
+
+```text
+Navigation Menu
+Visitor Counter Section
+Footer
+```
+
+---
+
+## Test the Counter
+
+Refresh the website.
+
+Example result:
+
+```text
+Views: 13
+```
+
+Each refresh should:
+
+1. Call Lambda
+2. Retrieve the current view count
+3. Increment DynamoDB
+4. Display the updated value
+
+---
+
+## Validate End-to-End Functionality
+
+Verify:
+
+```text
+Website → JavaScript → Lambda → DynamoDB
+```
+
+Workflow:
+
+```text
+User visits website
+      ↓
+JavaScript fetch request
+      ↓
+Lambda Function URL
+      ↓
+DynamoDB table updated
+      ↓
+New count returned
+      ↓
+Displayed on website
+```
+
+---
+
+## Troubleshooting and Debugging
+
+During implementation, the visitor counter initially failed and displayed:
+
+```text
+Views: unavailable
+```
+
+Several troubleshooting steps were performed to identify and resolve the issue.
+
+
+### Issue 1 – Lambda Response Format
+
+The original code expected a JSON response:
+
+```javascript
+const data = await response.json();
+```
+
+However, the Lambda function returned a plain text value.
+
+The code was updated to:
+
+```javascript
+const data = await response.text();
+```
+
+This allowed the visitor count to display correctly.
+
+---
+
+### Issue 2 – Lambda Function URL CORS Configuration
+
+The browser blocked requests from the website because the Function URL CORS settings were incomplete.
+
+The Function URL was updated with:
+
+```text
+Allow Origin:
+https://platform.nathan-resume.com
+
+Allow Methods:
+GET
+
+Allow Headers:
+*
+```
+
+For testing purposes, the following configuration was temporarily used:
+
+```text
+Allow Origin:
+*
+
+Allow Methods:
+GET
+
+Allow Headers:
+*
+```
+
+---
+
+### Issue 3 – CloudFront Caching
+
+After updating the JavaScript file, CloudFront continued serving an older cached version of `index.js`.
+
+To refresh the cache, a CloudFront invalidation was created:
+
+```text
+CloudFront
+→ Distributions
+→ Invalidations
+→ Create Invalidation
+```
+
+Path:
+
+```text
+/*
+```
+
+This forced CloudFront to retrieve the newest files from the S3 bucket.
+
+---
+
+These tools were used to verify:
+
+* Successful Lambda requests
+* HTTP status codes
+* JavaScript execution
+* CORS configuration
+* CloudFront cache updates
+
+---
+
+## Screenshot
+
+```text
+Screenshot 17 – JavaScript Visitor Counter Code
+```
+
+![JavaScript Counter](images/step8-javascript-code.png)
+
+```text
+Screenshot 18 – Visitor Counter Displayed on Website
+```
+
+![Website Counter](images/step8-visitor-counter.png)
+
+```text
+Screenshot 19 – CloudFront Cache Invalidation
+```
+
+![CloudFront Invalidation](images/step8-cloudfront-invalidation.png)
+
+```text
+Screenshot 20 – Visitor Counter Working
+```
+
+![Visitor Counter Working](images/step8-counter-working.png)
+
+---
+
+## Outcome
+
+The frontend website successfully communicates with the Lambda Function URL and displays the live visitor count. Through troubleshooting, Lambda configuration, CORS settings, CloudFront cache management, and browser debugging tools were validated. This completed the end-to-end visitor counter workflow before deploying the production infrastructure using Terraform.
+
+```
+```
