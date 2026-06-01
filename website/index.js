@@ -57,7 +57,7 @@ const counterElements = document.querySelectorAll(".counter-number");
 async function updateCounter() {
     try {
         const response = await fetch(
-            "https://wwjcx7tyxrbjmbkf3vc3teo3mu0qrvhq.lambda-url.ca-central-1.on.aws/"
+            "https://v62m4nlkzpcgiaqmifz35xfsoy0rlsbg.lambda-url.us-east-1.on.aws/"
         );
 
         const data = await response.json();
