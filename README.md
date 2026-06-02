@@ -33,3 +33,4 @@ S3, CloudFront, Route 53, and ACM were configured manually through the AWS Conso
 
 ## Technical Documentation
 See the full step-by-step build guide here: [STEP-BY-STEP.md](docs/STEP-BY-STEP.md)
+![11 Step plan](/images/sbs.png)
