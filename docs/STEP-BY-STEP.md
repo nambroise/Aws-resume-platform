@@ -95,7 +95,7 @@ Insert screenshot here:
 Screenshot 1 – Local Website Preview
 ```
 
-![Local Website Preview](images/step1-local-preview.png)
+![Local Website Preview](../images/step1-local-preview.png)
 
 ---
 
@@ -214,7 +214,7 @@ Insert screenshot here:
 Screenshot 2 – Amazon S3 Bucket Configuration
 ```
 
-![S3 Bucket](images/step2-s3-bucket.png)
+![S3 Bucket](../images/step2-s3-bucket.png)
 
 Insert screenshot here:
 
@@ -222,7 +222,7 @@ Insert screenshot here:
 Screenshot 3 – Website Files Uploaded to S3
 ```
 
-![S3 Upload](images/step2-s3-upload.png)
+![S3 Upload](../images/step2-s3-upload.png)
 
 ---
 
@@ -399,7 +399,7 @@ Insert screenshot here:
 Screenshot 4 – CloudFront Distribution Configuration
 ```
 
-![CloudFront Configuration](images/step3-cloudfront-config.png)
+![CloudFront Configuration](../images/step3-cloudfront-config.png)
 
 Insert screenshot here:
 
@@ -407,7 +407,7 @@ Insert screenshot here:
 Screenshot 5 – Origin Access Control (OAC)
 ```
 
-![OAC Configuration](images/step3-oac.png)
+![OAC Configuration](../images/step3-oac.png)
 
 Insert screenshot here:
 
@@ -415,7 +415,7 @@ Insert screenshot here:
 Screenshot 6 – Website Loaded Through CloudFront
 ```
 
-![CloudFront Website](images/step3-cloudfront-site.png)
+![CloudFront Website](../images/step3-cloudfront-site.png)
 
 ---
 
@@ -423,8 +423,8 @@ Screenshot 6 – Website Loaded Through CloudFront
 
 Amazon CloudFront was successfully configured as the content delivery layer for the AWS Resume Platform. The S3 bucket remains private while CloudFront securely delivers the website globally over HTTPS.
 
-```
-```
+---- 
+
 # Step 4 – Request an SSL Certificate with AWS Certificate Manager (ACM)
 
 ## Overview
@@ -590,8 +590,7 @@ Screenshot 9 – Certificate Issued
 
 An SSL/TLS certificate was successfully issued using AWS Certificate Manager. This certificate will be attached to CloudFront to provide secure HTTPS access to platform.nathan-resume.com.
 
-```
-```
+---
 # Step 5 – Configure Route 53 Custom Domain
 
 ## Overview
@@ -667,8 +666,8 @@ Add screenshot here:
 Screenshot 10 – Route 53 A Record for platform.nathan-resume.com
 ```
 
-![Cloudfront-CName ](images/step5-cloudfront-cname.png)
-![Route 53 Record](images/step5-route53-record.png)
+![Cloudfront-CName ](../images/step5-cloudfront-cname.png)
+![Route 53 Record](../images/step5-route53-record.png)
 
 Add screenshot here:
 
@@ -676,7 +675,7 @@ Add screenshot here:
 Screenshot 11 – Website Loading from Custom Domain
 ```
 
-![Custom Domain Website](images/step5-custom-domain.png)
+![Custom Domain Website](../images/step5-custom-domain.png)
 
 ---
 
@@ -764,13 +763,13 @@ This structure will later be used by the Lambda function to retrieve and update 
 Screenshot 12 – DynamoDB Test Table
 ```
 
-![DynamoDB Table](images/step6-dynamodb-table.png)
+![DynamoDB Table](../images/step6-dynamodb-table.png)
 
 ```text
 Screenshot 13 – DynamoDB Test Record
 ```
 
-![DynamoDB Record](images/step6-dynamodb-item.png)
+![DynamoDB Record](../images/step6-dynamodb-item.png)
 
 ---
 
@@ -905,19 +904,19 @@ After: 4
 Screenshot 14 – Lambda Function Configuration
 ```
 
-![Lambda Configuration](images/step7-lambda-config.png)
+![Lambda Configuration](../images/step7-lambda-config.png)
 
 ```text
 Screenshot 15 – Lambda Function URL Test
 ```
 
-![Lambda URL Test](images/step7-lambda-url.png)
+![Lambda URL Test](../images/step7-lambda-url.png)
 
 ```text
 Screenshot 16 – DynamoDB Updated by Lambda
 ```
 
-![Lambda DynamoDB Update](images/step7-lambda-update.png)
+![Lambda DynamoDB Update](../images/step7-lambda-update.png)
 
 ---
 
@@ -925,8 +924,8 @@ Screenshot 16 – DynamoDB Updated by Lambda
 
 A test Lambda function successfully retrieved visitor counts from DynamoDB, incremented the count, updated the database, and returned the new value. This validated the visitor counter logic before automating deployment with Terraform.
 
-```
-```
+---
+
 # Step 8 – Test the JavaScript Visitor Counter Integration
 
 ## Overview
@@ -1179,25 +1178,25 @@ I used browser developer tools to verify:
 Screenshot 17 – JavaScript Visitor Counter Code
 ```
 
-![JavaScript Counter](images/step8-javascript-code.png)
+![JavaScript Counter](../images/step8-javascript-code.png)
 
 ```text
 Screenshot 18 – Visitor Counter Displayed on Website
 ```
 
-![Website Counter](images/step8-visitor-counter.png)
+![Website Counter](../images/step8-visitor-counter.png)
 
 ```text
 Screenshot 19 – CloudFront Cache Invalidation
 ```
 
-![CloudFront Invalidation](images/step8-cloudfront-invalidation.png)
+![CloudFront Invalidation](../images/step8-cloudfront-invalidation.png)
 
 ```text
 Screenshot 20 – Visitor Counter Working
 ```
 
-![Visitor Counter Working](images/step8-counter-working.png)
+![Visitor Counter Working](../images/step8-counter-working.png)
 
 ---
 
@@ -1205,7 +1204,7 @@ Screenshot 20 – Visitor Counter Working
 
 The frontend website was connected to the Lambda Function URL using JavaScript. After troubleshooting the Lambda response format, CORS settings, and CloudFront caching, the website successfully displayed the live visitor count from DynamoDB. This validated the end-to-end visitor counter workflow before deploying the production infrastructure with Terraform.
 
- --
+ ---
 # Step 10 – Configure GitHub Actions Frontend CI/CD
 
 ## Overview
@@ -1367,19 +1366,19 @@ CloudFront serves updated website
 Screenshot 24 – GitHub Actions Workflow File
 ```
 
-![Workflow File](images/step10-github-actions-yaml.png)
+![Workflow File](../images/step10-github-actions-yaml.png)
 
 ```text
 Screenshot 25 – GitHub Secrets Configuration
 ```
 
-![GitHub Secrets](images/step10-github-secrets.png)
+![GitHub Secrets](../images/step10-github-secrets.png)
 
 ```text
 Screenshot 26 – Successful GitHub Actions Run
 ```
 
-![GitHub Actions Success](images/step10-github-actions-success.png)
+![GitHub Actions Success](../images/step10-github-actions-success.png)
 
 ---
 
@@ -1799,25 +1798,25 @@ git push origin main
 Screenshot 27 – Terraform Infra Folder
 ```
 
-![Terraform Infra Folder](images/step11-terraform-infra-folder.png)
+![Terraform Infra Folder](../images/step11-terraform-infra-folder.png)
 
 ```text
 Screenshot 28 – Terraform Init
 ```
 
-![Terraform Init](images/step11-terraform-init.png)
+![Terraform Init](../images/step11-terraform-init.png)
 
 ```text
 Screenshot 29 – Terraform Plan Showing 5 Resources
 ```
 
-![Terraform Plan](images/step11-terraform-plan.png)
+![Terraform Plan](../images/step11-terraform-plan.png)
 
 ```text
 Screenshot 30 – Terraform Apply Complete
 ```
 
-![Terraform Apply](images/step11-terraform-apply.png)
+![Terraform Apply](../images/step11-terraform-apply.png)
 
 ```text
 Screenshot 31 – Lambda Function Created in AWS Console
@@ -1829,13 +1828,13 @@ Screenshot 31 – Lambda Function Created in AWS Console
 Screenshot 32 – Lambda Function URL Created
 ```
 
-![Lambda Function URL](images/step11-lambda-url.png)
+![Lambda Function URL](../images/step11-lambda-url.png)
 
 ```text
 Screenshot 33 – IAM Role and Policy Attached
 ```
 
-![IAM Role Policy](images/step11-iam-policy.png)
+![IAM Role Policy](../images/step11-iam-policy.png)
 
 ---
 
