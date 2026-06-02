@@ -566,7 +566,7 @@ Insert screenshot here:
 Screenshot 7 – ACM Certificate Request
 ```
 
-![ACM Request](images/step4-acm-request.png)
+![ACM Request](../images/step4-acm-request.png)
 
 Insert screenshot here:
 
@@ -574,7 +574,7 @@ Insert screenshot here:
 Screenshot 8 – DNS Validation Records
 ```
 
-![DNS Validation](images/step4-acm-dns-validation.png)
+![DNS Validation](../images/step4-acm-dns-validation.png)
 
 Insert screenshot here:
 
@@ -582,7 +582,7 @@ Insert screenshot here:
 Screenshot 9 – Certificate Issued
 ```
 
-![Certificate Issued](images/step4-acm-issued.png)
+![Certificate Issued](../images/step4-acm-issued.png)
 
 ---
 
