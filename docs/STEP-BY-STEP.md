@@ -1204,3 +1204,641 @@ Screenshot 20 – Visitor Counter Working
 ## Outcome
 
 The frontend website was connected to the Lambda Function URL using JavaScript. After troubleshooting the Lambda response format, CORS settings, and CloudFront caching, the website successfully displayed the live visitor count from DynamoDB. This validated the end-to-end visitor counter workflow before deploying the production infrastructure with Terraform.
+
+ --
+# Step 10 – Configure GitHub Actions Frontend CI/CD
+
+## Overview
+
+In this step, I configured GitHub Actions to automatically deploy the frontend website files to Amazon S3 whenever changes are pushed to the main branch. This eliminates the need for manual uploads and creates a continuous deployment workflow.
+
+## Objectives
+
+* Create a GitHub Actions workflow
+* Configure automated frontend deployment
+* Deploy website files to Amazon S3
+* Store AWS credentials securely
+* Enable Continuous Integration and Continuous Deployment (CI/CD)
+
+---
+
+## Create GitHub Actions Directory
+
+Inside the repository, create the following folder structure:
+
+```text
+.github/
+└── workflows/
+```
+
+---
+
+## Create Workflow File
+
+Create a file named:
+
+```text
+front-end-CICD.yml
+```
+
+Location:
+
+```text
+.github/workflows/front-end-CICD.yml
+```
+
+---
+
+## GitHub Actions Workflow
+
+Add the following workflow:
+
+```yaml
+name: Upload Website to S3
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl private --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'us-east-1'
+        SOURCE_DIR: 'website'
+```
+
+---
+
+## Configure GitHub Secrets
+
+Navigate to:
+
+```text
+GitHub Repository
+→ Settings
+→ Secrets and Variables
+→ Actions
+```
+
+Create the following secrets:
+
+| Secret Name           | Description    |
+| --------------------- | -------------- |
+| AWS_S3_BUCKET         | S3 bucket name |
+| AWS_ACCESS_KEY_ID     | IAM access key |
+| AWS_SECRET_ACCESS_KEY | IAM secret key |
+
+---
+
+## Commit Workflow File
+
+Stage the workflow:
+
+```bash
+git add .
+```
+
+Commit the workflow:
+
+```bash
+git commit -m "Add frontend CI/CD workflow"
+```
+
+Push to GitHub:
+
+```bash
+git push origin main
+```
+
+---
+
+## Verify GitHub Actions
+
+Navigate to:
+
+```text
+GitHub Repository
+→ Actions
+```
+
+A workflow run should appear.
+
+Example:
+
+```text
+Upload Website to S3
+```
+
+If successful, GitHub will display a green check mark.
+
+---
+
+## CI/CD Workflow Process
+
+```text
+Developer updates website files
+            ↓
+git push origin main
+            ↓
+GitHub Actions triggered
+            ↓
+Authenticate to AWS
+            ↓
+Sync website folder to S3
+            ↓
+CloudFront serves updated website
+```
+
+---
+
+## Screenshot
+
+```text
+Screenshot 24 – GitHub Actions Workflow File
+```
+
+![Workflow File](images/step10-github-actions-yaml.png)
+
+```text
+Screenshot 25 – GitHub Secrets Configuration
+```
+
+![GitHub Secrets](images/step10-github-secrets.png)
+
+```text
+Screenshot 26 – Successful GitHub Actions Run
+```
+
+![GitHub Actions Success](images/step10-github-actions-success.png)
+
+---
+
+## Outcome
+
+GitHub Actions was successfully configured to automate frontend deployments. Any changes pushed to the main branch are automatically synchronized to Amazon S3, creating a repeatable and scalable CI/CD pipeline for the AWS Resume Platform.
+
+---
+# Step 11 – Deploy Backend Infrastructure with Terraform
+
+## Overview
+
+In this step, I deployed the backend infrastructure for the AWS Resume Platform using Terraform. Terraform was used to create the Lambda function, Lambda Function URL, IAM role, IAM policy, and permissions required for the visitor counter backend.
+
+## Objectives
+
+* Clone the GitHub repository to the CentOS SSH environment
+* Navigate to the Terraform infrastructure folder
+* Verify Terraform configuration files
+* Verify AWS CLI credentials
+* Initialize Terraform providers
+* Validate the Terraform configuration
+* Review the Terraform execution plan
+* Deploy the backend infrastructure
+* Confirm the Lambda function was created in the AWS Console
+
+---
+
+## Clone the Repository
+
+The project repository was cloned into the CentOS environment.
+
+```bash
+git clone https://github.com/nambroise/Aws-resume-platform.git
+```
+
+After cloning, I moved into the project folder.
+
+```bash
+cd Aws-resume-platform
+```
+
+---
+
+## Navigate to the Terraform Directory
+
+The Terraform files are stored inside the `infra` folder.
+
+```bash
+cd infra
+```
+
+The folder contained:
+
+```text
+lambda/
+main.tf
+provider.tf
+```
+
+---
+
+## Verify Terraform Files
+
+The `provider.tf` file configured Terraform to use the AWS provider.
+
+```hcl
+terraform {
+  required_version = ">= 1.5.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  profile = "default"
+  region  = "us-east-1"
+}
+```
+
+---
+
+## Backend Infrastructure Code
+
+The `main.tf` file defines the Lambda function, IAM role, IAM policy, Lambda Function URL, and output value.
+
+```hcl
+resource "aws_lambda_function" "myfunc" {
+  filename         = "${path.module}/lambda/func.zip"
+  source_code_hash = filebase64sha256("${path.module}/lambda/func.zip")
+
+  function_name = "nathan-resume-platform"
+  role          = aws_iam_role.iam_for_lambda.arn
+  handler       = "func.lambda_handler"
+  runtime       = "python3.12"
+}
+
+resource "aws_iam_role" "iam_for_lambda" {
+  name = "nathan_resume_platform_lambda_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+        Effect = "Allow"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "iam_policy_for_resume_project" {
+  name        = "nathan_resume_platform_lambda_policy"
+  path        = "/"
+  description = "IAM policy for the AWS Resume Platform Lambda function"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:PutItem"
+        ]
+        Resource = "arn:aws:dynamodb:*:*:table/nathan-resume-platform"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.iam_policy_for_resume_project.arn
+}
+
+resource "aws_lambda_function_url" "url1" {
+  function_name      = aws_lambda_function.myfunc.function_name
+  authorization_type = "NONE"
+
+  cors {
+    allow_credentials = false
+    allow_origins = [
+      "https://platform.nathan-resume.com",
+      "https://d1yd9qn7a5bnqz.cloudfront.net"
+    ]
+    allow_methods  = ["GET"]
+    allow_headers  = ["*"]
+    expose_headers = ["*"]
+    max_age        = 86400
+  }
+}
+
+output "lambda_function_url" {
+  value = aws_lambda_function_url.url1.function_url
+}
+```
+
+---
+
+## Verify Lambda Deployment Package
+
+The Lambda deployment package was stored in the `lambda` folder.
+
+```bash
+tree lambda/
+```
+
+Expected structure:
+
+```text
+lambda/
+├── func.py
+└── func.zip
+```
+
+The ZIP file is required because Terraform uploads the Lambda function as a deployment package.
+
+---
+
+## Confirm AWS CLI Credentials
+
+Terraform uses the AWS credentials configured on the CentOS machine.
+
+I checked the AWS configuration.
+
+```bash
+aws configure list
+```
+
+The configuration showed that the access key, secret key, and region were available from the shared AWS credentials and config files.
+
+```text
+access_key : shared-credentials-file
+secret_key : shared-credentials-file
+region     : us-east-1
+```
+
+I also verified that the AWS config file used JSON output.
+
+```bash
+cat ~/.aws/config
+```
+
+Expected configuration:
+
+```ini
+[default]
+region = us-east-1
+output = json
+```
+
+The AWS credentials were stored locally in the CentOS user environment and were not committed to GitHub.
+
+---
+
+## Format Terraform Files
+
+Terraform formatting was applied to clean up the configuration.
+
+```bash
+terraform fmt
+```
+
+---
+
+## Initialize Terraform
+
+Terraform was initialized inside the `infra` directory.
+
+```bash
+terraform init
+```
+
+Terraform downloaded and installed the AWS provider.
+
+Example result:
+
+```text
+Terraform has been successfully initialized!
+```
+
+---
+
+## Validate Terraform Configuration
+
+After initialization, the Terraform configuration was validated.
+
+```bash
+terraform validate
+```
+
+---
+
+## Review Terraform Plan
+
+Before deploying, I reviewed the Terraform execution plan.
+
+```bash
+terraform plan
+```
+
+Terraform planned to create five resources:
+
+```text
+aws_iam_policy.iam_policy_for_resume_project
+aws_iam_role.iam_for_lambda
+aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role
+aws_lambda_function.myfunc
+aws_lambda_function_url.url1
+```
+
+The plan showed:
+
+```text
+Plan: 5 to add, 0 to change, 0 to destroy.
+```
+
+---
+
+## Apply Terraform
+
+After reviewing the plan, I applied the Terraform configuration.
+
+```bash
+terraform apply
+```
+
+When prompted, I confirmed the deployment.
+
+```text
+yes
+```
+
+Terraform successfully created the backend infrastructure.
+
+```text
+Apply complete! Resources: 5 added, 0 changed, 0 destroyed.
+```
+
+---
+
+## Terraform Output
+
+After the apply completed, Terraform returned the Lambda Function URL.
+
+```text
+lambda_function_url = "https://u7pl5cc7cijaabuwscsfzezztu0cawjv.lambda-url.us-east-1.on.aws/"
+```
+
+This URL is used by the frontend JavaScript visitor counter.
+
+---
+
+## Verify Resources in AWS Console
+
+After Terraform completed, I verified the resources in the AWS Console.
+
+Navigate to:
+
+```text
+AWS Console
+→ Lambda
+→ Functions
+```
+
+The Lambda function was created:
+
+```text
+nathan-resume-platform
+```
+
+The Lambda function used:
+
+```text
+Runtime: Python 3.12
+Handler: func.lambda_handler
+Function URL: Enabled
+Authorization: NONE
+```
+
+Then I verified the IAM permissions.
+
+Navigate to:
+
+```text
+AWS Console
+→ IAM
+→ Roles
+→ nathan_resume_platform_lambda_role
+```
+
+The Lambda role had a policy attached that allowed:
+
+```text
+CloudWatch Logs
+DynamoDB GetItem
+DynamoDB UpdateItem
+DynamoDB PutItem
+```
+
+This allows the Lambda function to read and update the visitor count stored in DynamoDB.
+
+---
+
+## Update Frontend with Lambda URL
+
+After Terraform created the Lambda Function URL, the frontend `index.js` file must use the new URL.
+
+Inside:
+
+```text
+website/index.js
+```
+
+The fetch request should point to:
+
+```javascript
+const response = await fetch(
+    "https://u7pl5cc7cijaabuwscsfzezztu0cawjv.lambda-url.us-east-1.on.aws/",
+    {
+        method: "GET"
+    }
+);
+```
+
+After updating the file, the frontend changes should be committed and pushed to GitHub so GitHub Actions can deploy the updated site to S3.
+
+```bash
+git add .
+git commit -m "Update frontend Lambda Function URL"
+git push origin main
+```
+
+---
+
+## Screenshot
+
+```text
+Screenshot 27 – Terraform Infra Folder
+```
+
+![Terraform Infra Folder](images/step11-terraform-infra-folder.png)
+
+```text
+Screenshot 28 – Terraform Init
+```
+
+![Terraform Init](images/step11-terraform-init.png)
+
+```text
+Screenshot 29 – Terraform Plan Showing 5 Resources
+```
+
+![Terraform Plan](images/step11-terraform-plan.png)
+
+```text
+Screenshot 30 – Terraform Apply Complete
+```
+
+![Terraform Apply](images/step11-terraform-apply.png)
+
+```text
+Screenshot 31 – Lambda Function Created in AWS Console
+```
+
+![Lambda Function Created](images/step11-lambda-console.png)
+
+```text
+Screenshot 32 – Lambda Function URL Created
+```
+
+![Lambda Function URL](images/step11-lambda-url.png)
+
+```text
+Screenshot 33 – IAM Role and Policy Attached
+```
+
+![IAM Role Policy](images/step11-iam-policy.png)
+
+---
+
+## Outcome
+
+Terraform successfully deployed the AWS Resume Platform backend infrastructure. The deployment created the Lambda function, Lambda Function URL, IAM role, IAM policy, and policy attachment. After deployment, the Lambda Function URL was available and ready to be connected to the frontend visitor counter.
