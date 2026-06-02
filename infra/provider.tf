@@ -1,12 +1,15 @@
 terraform {
+  required_version = ">= 1.5.0"
+
   required_providers {
     aws = {
-      version =">=4.9.0"
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
     }
   }
 }
+
 provider "aws" {
-  profile ="default"
-  region = "us-east-1"
+  profile = "default"
+  region  = "us-east-1"
 }
