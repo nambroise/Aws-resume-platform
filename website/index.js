@@ -51,33 +51,38 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Visitor counter powered by AWS Lambda + DynamoDB
-const counterElements = document.querySelectorAll(".counter-number");
+const counter = document.querySelector("#visitor-counter");
 
 async function updateCounter() {
+
+    if (!counter) return;
+
     try {
+
         const response = await fetch(
             "https://v62m4nlkzpcgiaqmifz35xfsoy0rlsbg.lambda-url.us-east-1.on.aws/",
             {
-                method: "GET"
+                method: "GET",
+                cache: "no-store"
             }
         );
 
         if (!response.ok) {
-            throw new Error(`HTTP error: ${response.status}`);
+            throw new Error("Failed request");
         }
 
         const data = await response.text();
 
-        counterElements.forEach(counter => {
-            counter.innerHTML = `Views: ${data}`;
-        });
+        counter.innerHTML = `👀 Views: ${data}`;
 
-    } catch (error) {
-        console.error("Visitor counter error:", error);
+    }
 
-        counterElements.forEach(counter => {
-            counter.innerHTML = "Views: unavailable";
-        });
+    catch (error) {
+
+        console.error(error);
+
+        counter.innerHTML = "👀 Views: UNAVAILABLE";
+
     }
 }
 
