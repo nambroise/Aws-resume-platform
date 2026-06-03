@@ -1817,7 +1817,7 @@ Screenshot 30 – Terraform Apply Complete
 Screenshot 31 – Lambda Function Created in AWS Console
 ```
 
-![Lambda Function Created](images/step11-lambdab-console.png)
+![Lambda Function Created](../images/step11-lambdab-console.png)
 
 ```text
 Screenshot 32 – Lambda Function URL Created
