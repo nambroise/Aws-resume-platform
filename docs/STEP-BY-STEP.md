@@ -72,9 +72,7 @@ AWS Cloud Engineer / DevOps Engineer
      alt="AWS Resume Platform Architecture"
      class="img-fluid">
 ```
-
 ---
-
 ## Local Testing
 
 Before deploying to AWS, the website was tested locally to verify:
@@ -102,9 +100,7 @@ Screenshot 1 – Local Website Preview
 ## Outcome
 
 The AWS Resume Platform frontend was successfully customized and verified locally. The website is now ready for deployment to Amazon S3.
-
-```
-```
+---
 # Step 2 – Create and Configure the Amazon S3 Bucket
 
 ## Overview
@@ -230,8 +226,7 @@ Screenshot 3 – Website Files Uploaded to S3
 
 The Amazon S3 bucket was successfully created and configured to store all static website assets for the AWS Resume Platform. The bucket is secured with public access blocked and is ready to be connected to CloudFront in the next step.
 
-```
-```
+---
 # Step 3 – Create the CloudFront Distribution
 
 ## Overview
