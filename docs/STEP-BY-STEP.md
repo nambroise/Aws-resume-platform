@@ -691,7 +691,6 @@ Before deploying infrastructure with Terraform, I created a test DynamoDB table 
 * Create a sample visitor counter record
 * Verify the table structure before Terraform deployment
 
-> **Note:** This DynamoDB table was created for testing purposes. The production DynamoDB table is deployed later using Terraform.
 
 ---
 
@@ -769,9 +768,7 @@ Screenshot 13 – DynamoDB Test Record
 ## Outcome
 
 A DynamoDB test table was successfully created and validated. This confirmed the database design required for the visitor counter before automating deployment through Terraform.
-
-```
-```
+---
 # Step 7 – Test the Lambda Visitor Counter Function
 
 ## Overview
@@ -873,7 +870,7 @@ https://v62m4nlkzpcgiaqmifz35xfsoy0rlsbg.lambda-url.us-east-1.on.aws/
 Expected result:
 
 ```text
-
+3
 ```
 
 Refreshing the page should increase the count.
