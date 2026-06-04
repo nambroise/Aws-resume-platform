@@ -677,9 +677,7 @@ Screenshot 11 – Website Loading from Custom Domain
 ## Outcome
 
 The custom domain `platform.nathan-resume.com` was successfully connected to the CloudFront distribution, allowing users to access the AWS Resume Platform through a professional HTTPS domain.
-
-```
-```
+---
 # Step 6 – Test the DynamoDB Visitor Counter Table
 
 ## Overview
